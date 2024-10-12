@@ -24,7 +24,6 @@ BotClient = Clients.TelegramBotClient()
 
 broadcasted_message_ids = {}
 
-
 async def send_message_to_channel(message_content):
     try:
         await BotClient.send_message(TARGET_CHANNEL, message_content, link_preview=False)
@@ -37,7 +36,6 @@ def broadcast_message(message):
         loop.create_task(send_message_to_channel(message))
     else:
         loop.run_until_complete(send_message_to_channel(message))
-
 
 async def main():
     await ListenerClient.start()
