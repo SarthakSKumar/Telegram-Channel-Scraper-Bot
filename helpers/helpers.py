@@ -24,8 +24,9 @@ class Helpers:
         if not message:
             return False
 
-        amazon_url_pattern = re.compile(r'https://www\.amazon\.in/.*')
-        shortened_amazon_url_pattern = re.compile(r'https://amzn\.to/.*')
+        amazon_url_pattern = re.compile(r'(?<!\s)https://www\.amazon\.in/.*')
+        shortened_amazon_url_pattern = re.compile(
+            r'(?<!\s)https://amzn\.to/.*')
 
         links = re.findall(r'https?://[^\s]+', message)
 

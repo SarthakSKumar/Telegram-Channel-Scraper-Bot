@@ -28,10 +28,8 @@ broadcasted_message_ids = {}
 async def send_message_to_channel(message_content):
     try:
         await BotClient.send_message(TARGET_CHANNEL, message_content, link_preview=False)
-        print(f"Message broadcasted to {TARGET_CHANNEL}")
     except Exception as e:
         print(f"Error broadcasting message: {e}")
-
 
 def broadcast_message(message):
     loop = asyncio.get_event_loop()
@@ -47,22 +45,16 @@ async def main():
 
     @ListenerClient.on(events.NewMessage(chats=[SOURCE_CHANNEL_1, SOURCE_CHANNEL_2]))
     async def handler(event):
-        print("")
         Helpers.cleanup_expired_ids(broadcasted_message_ids)
 
         if event.message.message and event.message.id not in broadcasted_message_ids:
             message_content = event.message.message
-            print("message", message_content, f"{'-'*10}")
             if (Helpers.validate_message_content(message_content)):
                 message_content = Helpers.modify_urls(
                     message_content, UTM)
 
-                print("modified message", message_content)
-
                 formatted_message = f"{message_content}\n"
                 broadcast_message(formatted_message)
-
-                print("message broadcasted")
 
                 broadcasted_message_ids[event.message.id] = time.time()
 
