@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Clients:
     def __init__(self):
         self.API_ID = os.getenv('API_ID')
