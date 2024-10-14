@@ -24,9 +24,11 @@ class Helpers:
         if not message:
             return False
 
-        amazon_url_pattern = re.compile(r'(?<!\s)https://www\.amazon\.in/.*')
+        amazon_url_pattern = re.compile(
+            r'(?<!\s)https://www\.amazon\.in/.*')  # Amazon URL
         shortened_amazon_url_pattern = re.compile(
-            r'(?<!\s)https://amzn\.to/.*')
+            r'(?<!\s)https://amzn\.to/.*')  # Shortened Amazon URL
+        blinks_to_pattern = re.compile(r'(?<!\s)blinks\.to/.*')  # Blinks URL
 
         links = re.findall(r'https?://[^\s]+', message)
 
@@ -34,14 +36,36 @@ class Helpers:
             return False
 
         for link in links:
-            if not (amazon_url_pattern.match(link) or shortened_amazon_url_pattern.match(link)):
+            if not (amazon_url_pattern.match(link) or shortened_amazon_url_pattern.match(link) or blinks_to_pattern.match(link)):
                 return False
 
         return True
 
+    def strip_message(self, message):  # Added self here
+        for i, char in enumerate(message):
+            if char.isalpha():
+                # Return the message from the first alphabet character
+                return message[i:]
+        return ""
+
+    def modify_message(self, message):
+        # Use self to call the instance method
+        message = self.strip_message(message)
+        words = message.split()
+        # Remove Usernames
+        words = [word for word in words if not word.startswith('@')]
+
+        first_word = words[0].lower() if words else ""
+
+        # Remove words like "Grab", "Fast", "Faaast"
+        if first_word in ["grab", "faast", "faaasssttt"]:
+            message = ' '.join(words[1:])
+
+        return '⚡️ **Deal Alert**: \n' + message  # Add Deal Alert Text
+
     def modify_urls(self, message, utm):
         def expand_url(url):
-            if 'amzn.to' in url:
+            if 'amzn.to' in url or 'blinks.to' in url:  # Fixed condition to check each separately
                 try:
                     headers = {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
