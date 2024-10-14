@@ -46,32 +46,36 @@ def broadcast_message(message):
         loop.run_until_complete(send_message_to_channel(message))
 
 
+async def process_message(event):
+    helpers.cleanup_expired_ids(broadcasted_message_ids)
+
+    if event.message.message and event.message.id not in broadcasted_message_ids:
+        message_content = event.message.message
+        logger.info(
+            f"New Message: {event.message.peer_id}")
+
+        if helpers.validate_message_content(message_content):
+            logger.info("Valid ✅")
+            message_content = helpers.modify_message(message_content)
+            message_content = helpers.modify_urls(message_content, UTM)
+            logger.info(
+                f"Modified ✅")
+
+            formatted_message = f"{message_content}\n"
+            broadcast_message(formatted_message)
+
+            broadcasted_message_ids[event.message.id] = time.time()
+        else:
+            logger.warning("Invalid ❌")
+
+
 async def main():
     await listener_client.start()
     await bot_client.start(bot_token=BOT_TOKEN)
 
     @listener_client.on(events.NewMessage(chats=list(SOURCE_CHANNELS)))
     async def handler(event):
-        helpers.cleanup_expired_ids(broadcasted_message_ids)
-
-        if event.message.message and event.message.id not in broadcasted_message_ids:
-            message_content = event.message.message
-            logger.info(
-                f"New Message: {event.message.peer_id}")
-
-            if helpers.validate_message_content(message_content):
-                logger.info("Valid ✅")
-                message_content = helpers.modify_message(message_content)
-                message_content = helpers.modify_urls(message_content, UTM)
-                logger.info(
-                    f"Modified ✅")
-
-                formatted_message = f"{message_content}\n"
-                broadcast_message(formatted_message)
-
-                broadcasted_message_ids[event.message.id] = time.time()
-            else:
-                logger.warning("Invalid ❌")
+        asyncio.create_task(process_message(event))
 
     logger.info("Listening for messages...")
     await listener_client.run_until_disconnected()
