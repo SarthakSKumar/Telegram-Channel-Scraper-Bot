@@ -10,11 +10,17 @@ helpers = Helpers()
 
 # Sample message to process
 message = """
-💥 Jakmister (Anti-Vibration) Unbreakable Plastic 700 W 16000RPM 90 Miles/Hour Electric Air Blower Dust PC Cleaner Forward Curved Air Blower
+🔥🔥
 
-▶️ Deal @ ₹485/-😱 
+Acer 32 inches HD LED TV at 7999.
 
-Link : https://www.amazon.in/Jakmister-Electric-Blower-Cleaner-16000RPM/dp/B07L4RTJG8?language=en_IN&tag=pavankalyan05-21"""
+amazon.in/dp/B0C4YCSF2R?tag=anilfacts0e-21
+
+Redmi (32 inches) Smart LED Fire TV at 10,349
+
+https://www.amazon.in/dp/B0D4LJ9WVW?tag=anilfacts0e-21
+
+Rs.1149 Off With BOB/HSBC/INDUSIND."""
 
 # Step 1: Validate the message content
 if helpers.validate_message_content(message):

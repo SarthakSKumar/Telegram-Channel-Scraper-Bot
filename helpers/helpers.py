@@ -123,12 +123,14 @@ class Helpers:
         for line in lines:
             words = line.split()
             valid_urls = [
-                f"https://{word}" if 'blinks.to' in word or 'amzn.to' in word or 'amazon.in' in word else word
+                f"https://{word}" if ('blinks.to' in word or 'amzn.to' in word or 'amazon.in' in word) and not word.startswith(('http://', 'https://'))
+                else word
                 for word in words
             ]
 
             modified_words = [modify_url(word) if word.startswith(
                 ('http://', 'https://')) else word for word in valid_urls]
+
             modified_lines.append(' '.join(modified_words))
 
         return '\n'.join(modified_lines)
