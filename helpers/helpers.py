@@ -80,7 +80,7 @@ class Helpers:
             return url
 
         def modify_url(url):
-            expanded_url = expand_url('https://blinks.to/NydZukq')
+            expanded_url = expand_url(url)
             parsed_url = urllib.parse.urlparse(expanded_url)
 
             # Check if it's an Amazon URL
