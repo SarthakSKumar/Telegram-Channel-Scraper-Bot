@@ -61,7 +61,7 @@ class Helpers:
         if first_word in ["grab", "faast", "faaasssttt"]:
             message = ' '.join(words[1:])
 
-        return '⚡️ **Deal Alert**: \n' + message  # Add Deal Alert Text
+        return '**⚡️ DEAL ALERT** : \n' + message  # Add Deal Alert Text
 
     def modify_urls(self, message, utm):
         def expand_url(url):
@@ -112,7 +112,7 @@ class Helpers:
                 ))
                 return modified_url
 
-            return expanded_url
+            return f"[🛒 SHOP NOW]({expanded_url})"  # Hyperlink
 
         lines = message.split('\n')
         modified_lines = []
