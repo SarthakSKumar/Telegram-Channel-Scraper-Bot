@@ -113,9 +113,9 @@ class Helpers:
                     new_query,
                     ''
                 ))
-                return f"[🛒 SHOP NOW]({modified_url})"
+                return f"[🛒 SHOP NOW]({modified_url})\n"
 
-            return f"[🛒 SHOP NOW]({expanded_url})"
+            return f"[🛒 SHOP NOW]({expanded_url})\n"
 
         lines = message.split('\n')
         modified_lines = []
