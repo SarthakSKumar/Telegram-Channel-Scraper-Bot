@@ -30,7 +30,7 @@ class Helpers:
             r'(?<!\s)https://amzn\.to/.*')  # Shortened Amazon URL
         blinks_to_pattern = re.compile(r'(?<!\s)blinks\.to/.*')  # Blinks URL
 
-        links = re.findall(r'https?://[^\s]+', message)
+        links = re.findall(r'https?://[^\s]+|blinks\.to/[^\s]+', message)
 
         if not links:
             return False
@@ -64,8 +64,10 @@ class Helpers:
         return '**⚡️ DEAL ALERT** : \n' + message  # Add Deal Alert Text
 
     def modify_urls(self, message, utm):
+
         def expand_url(url):
-            if 'amzn.to' in url or 'blinks.to' in url:  # Fixed condition to check each separately
+            # Check for both Amazon and Blinks URLs
+            if 'amzn.to' in url or 'blinks.to' in url:
                 try:
                     headers = {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
@@ -74,14 +76,15 @@ class Helpers:
                     with urllib.request.urlopen(req, timeout=10) as response:
                         return response.url
                 except Exception as e:
-                    return url
+                    return url  # Return the original URL in case of any error
             return url
 
         def modify_url(url):
-            expanded_url = expand_url(url)
+            expanded_url = expand_url('https://blinks.to/NydZukq')
             parsed_url = urllib.parse.urlparse(expanded_url)
 
-            if parsed_url.netloc.endswith('amazon.com') or 'amazon.' in parsed_url.netloc:
+            # Check if it's an Amazon URL
+            if parsed_url.netloc.endswith('amazon.in') or 'amazon.' in parsed_url.netloc:
                 query_params = urllib.parse.parse_qs(parsed_url.query)
 
                 params_to_remove = ['ds', 'qid', 'tag', 'ref', 'linkCode', 'creative', 'ie', 'ascsubtag',
@@ -110,17 +113,22 @@ class Helpers:
                     new_query,
                     ''
                 ))
-                return modified_url
+                return f"[🛒 SHOP NOW]({modified_url})"
 
-            return f"[🛒 SHOP NOW]({expanded_url})"  # Hyperlink
+            return f"[🛒 SHOP NOW]({expanded_url})"
 
         lines = message.split('\n')
         modified_lines = []
 
         for line in lines:
             words = line.split()
+            valid_urls = [
+                f"https://{word}" if 'blinks.to' in word or 'amzn.to' in word or 'amazon.in' in word else word
+                for word in words
+            ]
+
             modified_words = [modify_url(word) if word.startswith(
-                ('http://', 'https://')) else word for word in words]
+                ('http://', 'https://')) else word for word in valid_urls]
             modified_lines.append(' '.join(modified_words))
 
         return '\n'.join(modified_lines)
