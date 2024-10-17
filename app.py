@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 SOURCE_CHANNELS = os.getenv('SOURCE_CHANNELS').split(',')
-TARGET_CHANNEL = os.getenv('TARGET_CHANNEL')
+TARGET_CHANNEL = int(os.getenv('TARGET_CHANNEL'))
 
 UTM = os.getenv('UTM')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -62,6 +62,7 @@ async def process_message(event):
                 f"Modified ✅")
 
             formatted_message = f"{message_content}\n"
+
             broadcast_message(formatted_message)
 
             broadcasted_message_ids[event.message.id] = time.time()

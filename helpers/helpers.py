@@ -49,19 +49,16 @@ class Helpers:
         return ""
 
     def modify_message(self, message):
-        # Use self to call the instance method
         message = self.strip_message(message)
-        words = message.split()
-        # Remove Usernames
-        words = [word for word in words if not word.startswith('@')]
+        pattern = re.compile(r'^(g+r+a+b+|f+a+s+t+)\s*', re.IGNORECASE)
+        while True:
+            new_message = re.sub(pattern, '', message)
 
-        first_word = words[0].lower() if words else ""
+            if new_message == message:
+                break
 
-        # Remove words like "Grab", "Fast", "Faaast"
-        if first_word in ["grab", "faast", "faaasssttt"]:
-            message = ' '.join(words[1:])
-
-        return '**⚡️ DEAL ALERT** : \n' + message  # Add Deal Alert Text
+            message = new_message
+        return '**⚡️ DEAL ALERT** : \n' + message.strip()
 
     def modify_urls(self, message, utm):
 
@@ -79,16 +76,27 @@ class Helpers:
                     return url  # Return the original URL in case of any error
             return url
 
+        def clean_url(url):
+            # Remove any emoji characters or symbols like 👉 from the URL
+            url = re.sub(r'[^\x00-\x7F]+', '', url)
+
+        # Remove duplicate `https://` if present
+            url = url.replace("https://https://", "https://")
+
+            return url
+
         def modify_url(url):
             expanded_url = expand_url(url)
-            parsed_url = urllib.parse.urlparse(expanded_url)
+            cleaned_url = clean_url(expanded_url)
+            parsed_url = urllib.parse.urlparse(cleaned_url)
 
-            # Check if it's an Amazon URL
+        # Check if it's an Amazon URL
             if parsed_url.netloc.endswith('amazon.in') or 'amazon.' in parsed_url.netloc:
                 query_params = urllib.parse.parse_qs(parsed_url.query)
 
                 params_to_remove = ['ds', 'qid', 'tag', 'ref', 'linkCode', 'creative', 'ie', 'ascsubtag',
                                     'adid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'linkId', 'ref_']
+                                    
                 for param in params_to_remove:
                     query_params.pop(param, None)
 
@@ -115,7 +123,7 @@ class Helpers:
                 ))
                 return f"[🛒 SHOP NOW]({modified_url})\n"
 
-            return f"[🛒 SHOP NOW]({expanded_url})\n"
+            return f"[🛒 SHOP NOW]({cleaned_url})\n"
 
         lines = message.split('\n')
         modified_lines = []
